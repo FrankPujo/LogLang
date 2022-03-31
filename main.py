@@ -1,53 +1,41 @@
 import sys
 
-# manage sys.argv[] and other inputs
-# desired number to find a fraction of
-n = float(sys.argv[1])
-# maximum
-maxc = input( "Enter number of iterations: " )
-if maxc == "auto":
-	maxc = 100
-else:
-	maxc = int(maxc)
+filename = sys.argv[1]
+sourceCode = open( filename, 'r' ).read()
 
-def main(x, cstop):
-	# initialize a and b as 0 and 1
-	a = [0, 1]
-	b = [1, 1]
-	# value for m
-	m = [0, 0]
-	c = cstop
-	# set up some values
-	#perfect = False X
-	# loop for c iterations
-	while c != -1:
-		# update m and calculate its value
-		m[0] = a[0]+b[0]
-		m[1] = a[1]+b[1]
-		mv = m[0]/m[1]
-		# check if m has desired value or we reached the counter limit
-		if x == mv or c == 0:
-			# print the equation of the number with the obtained fraction
-			print( x, " = ", m[0], "/", m[1], sep="" )
-			#perfect = True X
-			break
-		elif x < mv:
-			# if x is smaller than the "median" value (m) then set m as the higher number (b)
-			b[0] = m[0]
-			b[1] = m[1]
-		elif x > mv:
-			# if x is smaller than the "median" value (m) then set m as the lower number (a)
-			a[0] = m[0]
-			a[1] = m[1]
-		c -= 1
-	# give information about the result
-	print( "Reached after:", cstop-c, "iterations." )
-	if x == mv:
-		#tell if the result is perfect or an approximation
-		print( "Perfect result!" )
-	else:
-		print( "The result is an approximation." )
-		print( "Actual value:", mv )
-		print( "Percentual difference: ", abs((mv/x)-1)*100, "%", sep="" )
+lines = sourceCode.split( "\n" )
 
-main(n, maxc)
+# variables dictionary
+variables = {}
+
+for line in lines:
+	tokens = line.split(" ")
+	keyword = tokens[0]
+	# handle variable declarations
+	if keyword == "loc":
+		# find variable name
+		name = tokens[1]
+		lastT = len(tokens)
+		# find the value of the variable after the ">" symbol
+		iValue = ' '.join(x for x in tokens[3:lastT])
+		fValue = ""
+		# for each character swap to python syntax
+		# get variable values from the variable dictionary
+		for e in iValue.split(" "):
+			eV = e
+			if e == "^":
+				eV = "&"
+			elif e == "V":
+				eV = "|"
+			elif e == "°":
+				eV = "~"
+			elif e != "0" and e != "1":
+				eV = variables.get(e)
+			eV = str(eV) + " "
+			fValue += eV
+		# evaluate the value from python syntax
+		aValue = eval( fValue )
+		# insert variable's name and value inside the dictionary
+		variables.update( { name: aValue } )
+
+print( variables )
