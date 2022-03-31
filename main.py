@@ -25,7 +25,7 @@ for line in lines:
 			eV = e
 			if e == "^":
 				eV = "&"
-			elif e == "V":
+			elif e == "V" or e == "v":
 				eV = "|"
 			elif e == "°":
 				eV = "~"
@@ -37,5 +37,11 @@ for line in lines:
 		aValue = eval( fValue )
 		# insert variable's name and value inside the dictionary
 		variables.update( { name: aValue } )
+	elif keyword == "ret":
+		i = 0
+		for var in tokens:
+			if i != 0:
+				print( variables.get(var) )
+			i += 1
 
-print( variables )
+#print( variables )
